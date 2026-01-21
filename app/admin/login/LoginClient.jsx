@@ -38,7 +38,7 @@ export default function LoginClient({ nextPath = "/admin" }) {
     <div className="card">
       <h1>Acceso admin</h1>
       <p>
-        <small>Introduce la contraseña. Si es la primera vez, se usará ADMIN_BOOTSTRAP_PASSWORD.</small>
+        <small>Introduce la contraseña. </small>
       </p>
 
       <form onSubmit={onSubmit} className="row">
