@@ -50,6 +50,13 @@ model AdminSetting {
   updatedAt        DateTime @updatedAt
 }
 
+model UserSetting {
+  id           Int      @id @default(1)
+  passwordHash String
+  updatedAt    DateTime @updatedAt
+}
+
+
 model Player {
   worldId    String
   playerId   Int
