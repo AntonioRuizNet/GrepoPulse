@@ -1,0 +1,67 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.kpis {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.card {
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.full {
+  width: 100%;
+}
+
+.cardTitle {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.grid > .card {
+  width: calc(50% - 8px);
+}
+
+.cardPlaceholder {
+  width: calc(50% - 8px);
+}
+
+@media (max-width: 900px) {
+  .grid > .card,
+  .cardPlaceholder {
+    width: 100%;
+  }
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.table th,
+.table td {
+  padding: 6px 4px;
+}
+
+.table th {
+  text-align: left;
+  opacity: 0.7;
+}
+
+.alignRight {
+  text-align: right;
+}
