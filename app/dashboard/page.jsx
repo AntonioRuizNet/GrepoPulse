@@ -6,11 +6,12 @@ export default function DashboardPage() {
   const user = cookies().get("gp_user")?.value;
 
   if (!admin && !user) redirect("/dashboard/login?next=/dashboard");
+  else redirect("/dashboard/monitor");
 
   return (
     <div className="card">
       <h1>Dashboard</h1>
-      <p>Zona privada para usuarios (solo lectura). Aquí pondremos tablas y gráficas.</p>
+      <p>Zona privada</p>
     </div>
   );
 }

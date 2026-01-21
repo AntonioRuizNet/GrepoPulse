@@ -4,14 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function LoginClient({ nextPath = "/admin" }) {
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function onSubmit(e) {
     e.preventDefault();
-    setError("");
     setLoading(true);
 
     try {
@@ -21,36 +19,41 @@ export default function LoginClient({ nextPath = "/admin" }) {
         body: JSON.stringify({ password }),
       });
 
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Login failed");
-      }
-
+      if (!res.ok) return;
       router.replace(nextPath);
-    } catch (err) {
-      setError(err?.message || String(err));
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="card">
-      <h1>Acceso admin</h1>
-      <p>
-        <small>Introduce la contraseña. </small>
-      </p>
-
-      <form onSubmit={onSubmit} className="row">
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Contraseña" />
-        <button disabled={loading}>{loading ? "Entrando…" : "Entrar"}</button>
+    <main
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 16,
+      }}
+    >
+      <form
+        onSubmit={onSubmit}
+        style={{
+          width: "min(360px, 100%)",
+          display: "flex",
+          gap: 10,
+          flexDirection: "column",
+        }}
+      >
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Contraseña"
+          autoFocus
+        />
+        <button disabled={loading || !password}>{loading ? "…" : "Entrar"}</button>
       </form>
-
-      {error ? (
-        <p>
-          <small style={{ color: "#ffb4b4" }}>{error}</small>
-        </p>
-      ) : null}
-    </div>
+    </main>
   );
 }
