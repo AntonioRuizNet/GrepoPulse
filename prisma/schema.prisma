@@ -1,0 +1,180 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum KillType {
+  all
+  att
+  def
+}
+
+model World {
+  id        String     @id // e.g. "es141"
+  name      String?
+  createdAt DateTime   @default(now())
+
+  snapshots Snapshot[]
+  players   Player[]
+  alliances Alliance[]
+  towns     Town[]
+  islands   Island[]
+  conquers  Conquer[]
+}
+
+model Snapshot {
+  id        String   @id @default(cuid())
+  worldId   String
+  fetchedAt DateTime @default(now())
+  status    String   @default("running")
+  durationMs Int?
+  notes     String?
+
+  world World @relation(fields: [worldId], references: [id], onDelete: Cascade)
+
+  playerRanks        PlayerRankSnapshot[]
+  playerKills        PlayerKillSnapshot[]
+  allianceRanks      AllianceRankSnapshot[]
+  allianceKills      AllianceKillSnapshot[]
+
+  @@index([worldId, fetchedAt])
+}
+
+model AdminSetting {
+  id               Int      @id @default(1)
+  passwordHash     String
+  updatedAt        DateTime @updatedAt
+}
+
+model Player {
+  worldId    String
+  playerId   Int
+  name       String
+  allianceId Int?
+  towns      Int
+  updatedAt  DateTime @updatedAt
+
+  world World @relation(fields: [worldId], references: [id], onDelete: Cascade)
+
+  @@id([worldId, playerId])
+  @@index([worldId, allianceId])
+}
+
+model PlayerRankSnapshot {
+  snapshotId String
+  playerId   Int
+  points     BigInt
+  rank       Int
+  towns      Int
+
+  snapshot Snapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+
+  @@id([snapshotId, playerId])
+  @@index([playerId])
+}
+
+model PlayerKillSnapshot {
+  snapshotId String
+  playerId   Int
+  type       KillType
+  rank       Int
+  points     BigInt
+
+  snapshot Snapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+
+  @@id([snapshotId, playerId, type])
+  @@index([playerId, type])
+}
+
+model Alliance {
+  worldId    String
+  allianceId Int
+  name       String
+  updatedAt  DateTime @updatedAt
+
+  world World @relation(fields: [worldId], references: [id], onDelete: Cascade)
+
+  @@id([worldId, allianceId])
+}
+
+model AllianceRankSnapshot {
+  snapshotId String
+  allianceId Int
+  points     BigInt
+  villages   Int
+  members    Int
+  rank       Int
+
+  snapshot Snapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+
+  @@id([snapshotId, allianceId])
+  @@index([allianceId])
+}
+
+model AllianceKillSnapshot {
+  snapshotId String
+  allianceId Int
+  type       KillType
+  rank       Int
+  points     BigInt
+
+  snapshot Snapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+
+  @@id([snapshotId, allianceId, type])
+  @@index([allianceId, type])
+}
+
+model Town {
+  worldId        String
+  townId         Int
+  playerId       Int
+  name           String
+  islandX        Int
+  islandY        Int
+  numberOnIsland Int
+  points         Int
+  updatedAt      DateTime @updatedAt
+
+  world World @relation(fields: [worldId], references: [id], onDelete: Cascade)
+
+  @@id([worldId, townId])
+  @@index([worldId, playerId])
+  @@index([worldId, islandX, islandY])
+}
+
+model Island {
+  worldId               String
+  islandId              Int
+  x                     Int
+  y                     Int
+  islandType            Int
+  availableTowns        Int
+  resourcesAdvantage    Int
+  resourcesDisadvantage Int
+  updatedAt             DateTime @updatedAt
+
+  world World @relation(fields: [worldId], references: [id], onDelete: Cascade)
+
+  @@id([worldId, islandId])
+  @@index([worldId, x, y])
+}
+
+model Conquer {
+  worldId      String
+  townId       Int
+  time         BigInt
+  newPlayerId  Int?
+  oldPlayerId  Int?
+  newAllyId    Int?
+  oldAllyId    Int?
+  townPoints   Int
+
+  world World @relation(fields: [worldId], references: [id], onDelete: Cascade)
+
+  @@id([worldId, townId, time])
+  @@index([worldId, time])
+}
