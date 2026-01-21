@@ -1,7 +1,9 @@
-import { NextResponse } from 'next/server';
-import { z } from 'zod';
-import { syncWorld } from '@/lib/sync';
-import { validateWorldId } from '@/lib/grepolis';
+export const runtime = "nodejs";
+
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import { syncWorld } from "@/lib/sync";
+import { validateWorldId } from "@/lib/grepolis";
 
 const Body = z.object({ worldId: z.string().min(1) });
 
@@ -10,7 +12,7 @@ export async function POST(req) {
     const json = await req.json();
     const { worldId } = Body.parse(json);
     if (!validateWorldId(worldId)) {
-      return NextResponse.json({ error: 'Invalid world. Example: es141' }, { status: 400 });
+      return NextResponse.json({ error: "Invalid world. Example: es141" }, { status: 400 });
     }
     const result = await syncWorld({ worldId });
     return NextResponse.json(result);
