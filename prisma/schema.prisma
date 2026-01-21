@@ -47,13 +47,13 @@ model Snapshot {
 model AdminSetting {
   id               Int      @id @default(1)
   passwordHash     String
-  updatedAt        DateTime @updatedAt
+  updatedAt        DateTime @default(now()) @updatedAt
 }
 
 model UserSetting {
   id           Int      @id @default(1)
   passwordHash String
-  updatedAt    DateTime @updatedAt
+  updatedAt    DateTime @default(now()) @updatedAt
 }
 
 
@@ -63,7 +63,7 @@ model Player {
   name       String
   allianceId Int?
   towns      Int
-  updatedAt  DateTime @updatedAt
+  updatedAt  DateTime @default(now()) @updatedAt
 
   world World @relation(fields: [worldId], references: [id], onDelete: Cascade)
 
@@ -101,7 +101,7 @@ model Alliance {
   worldId    String
   allianceId Int
   name       String
-  updatedAt  DateTime @updatedAt
+  updatedAt  DateTime @default(now()) @updatedAt
 
   world World @relation(fields: [worldId], references: [id], onDelete: Cascade)
 
@@ -144,7 +144,7 @@ model Town {
   islandY        Int
   numberOnIsland Int
   points         Int
-  updatedAt      DateTime @updatedAt
+  updatedAt      DateTime @default(now()) @updatedAt
 
   world World @relation(fields: [worldId], references: [id], onDelete: Cascade)
 
@@ -162,7 +162,7 @@ model Island {
   availableTowns        Int
   resourcesAdvantage    Int
   resourcesDisadvantage Int
-  updatedAt             DateTime @updatedAt
+  updatedAt             DateTime @default(now()) @updatedAt
 
   world World @relation(fields: [worldId], references: [id], onDelete: Cascade)
 
