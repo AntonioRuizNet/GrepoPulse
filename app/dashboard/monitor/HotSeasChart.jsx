@@ -1,27 +1,39 @@
 "use client";
 
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import styles from "./HotSeasChart.module.css";
 
-const BAR_COLOR = "#8EC5FF"; // azul suave
-const GRID_COLOR = "rgba(255,255,255,0.08)";
+const COLORS = [
+  "rgba(120,185,255,0.95)",
+  "rgba(167,111,255,0.95)",
+  "rgba(183,245,216,0.95)",
+  "rgba(255,179,193,0.95)",
+  "rgba(255,220,160,0.95)",
+  "rgba(170,220,255,0.95)",
+  "rgba(210,170,255,0.95)",
+  "rgba(160,255,220,0.95)",
+  "rgba(255,190,220,0.95)",
+  "rgba(255,240,180,0.95)",
+];
 
 export default function HotSeasChart({ rows }) {
   const data = (rows || []).map((r) => ({
-    sea: `Mar ${r.sea}`,
-    conquers: r.conquers,
+    name: `Mar ${r.sea}`,
+    value: Number(r.conquers),
   }));
 
   return (
     <div className={styles.chartWrap}>
-      <ResponsiveContainer width="100%" height={260}>
-        <BarChart data={data}>
-          <CartesianGrid stroke={GRID_COLOR} vertical={false} />
-          <XAxis dataKey="sea" tick={{ fontSize: 18, fill: "#fff" }} />
-          <YAxis tick={{ fontSize: 15, fill: "#fff" }} />
+      <ResponsiveContainer width="100%" height={500}>
+        <PieChart>
+          <Pie data={data} dataKey="value" nameKey="name" innerRadius={130} outerRadius={200} paddingAngle={2}>
+            {data.map((_, idx) => (
+              <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
+            ))}
+          </Pie>
           <Tooltip />
-          <Bar dataKey="conquers" fill={BAR_COLOR} radius={[8, 8, 0, 0]} />
-        </BarChart>
+          <Legend />
+        </PieChart>
       </ResponsiveContainer>
     </div>
   );

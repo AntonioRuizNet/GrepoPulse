@@ -5,5 +5,16 @@
 
 .main {
   flex: 1;
-  padding: 16px;
+  padding: 22px;
+  max-width: 1800px;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .shell {
+    flex-direction: column;
+  }
+  .main {
+    padding: 16px;
+  }
 }

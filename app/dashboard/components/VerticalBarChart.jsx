@@ -1,20 +1,20 @@
 "use client";
 
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
-import styles from "./LossPlayersChart.module.css";
+import styles from "./VerticalBarChart.module.css";
 
-const BAR_COLOR = "#FFB3C1"; // rosa suave
 const GRID_COLOR = "rgba(255,255,255,0.08)";
+const DEFAULT_BAR = "rgba(120,185,255,0.95)";
 
-export default function LossPlayersChart({ rows }) {
+export default function VerticalBarChart({ rows, valueKey, color = DEFAULT_BAR, height = 320, valueFormatter }) {
   const data = (rows || []).map((r) => ({
     name: r.name,
-    loss: Math.abs(Number(r.delta)), // magnitud de pérdida
+    value: Number(r[valueKey] ?? 0),
   }));
 
   return (
-    <div className={styles.chartWrap}>
-      <ResponsiveContainer width="100%" height={300}>
+    <div className={styles.wrap}>
+      <ResponsiveContainer width="100%" height={height}>
         <BarChart data={data} layout="vertical" margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
           <CartesianGrid stroke={GRID_COLOR} horizontal={false} />
           <XAxis
@@ -26,19 +26,15 @@ export default function LossPlayersChart({ rows }) {
           <YAxis
             type="category"
             dataKey="name"
-            width={120}
+            width={140}
             tick={{ fontSize: 12, fill: "#fff" }}
             axisLine={{ stroke: "rgba(255,255,255,0.18)" }}
             tickLine={{ stroke: "rgba(255,255,255,0.18)" }}
           />
-          <Tooltip />
-          <Bar dataKey="loss" fill={BAR_COLOR} radius={[0, 10, 10, 0]} />
+          <Tooltip formatter={valueFormatter ? (v) => valueFormatter(v) : undefined} />
+          <Bar dataKey="value" fill={color} radius={[0, 10, 10, 0]} />
         </BarChart>
       </ResponsiveContainer>
-
-      <div className={styles.legend}>
-        <br />
-      </div>
     </div>
   );
 }

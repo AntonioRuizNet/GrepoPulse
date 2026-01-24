@@ -15,6 +15,9 @@ export default function DashboardSidebar() {
         <Link href="/dashboard/rankings" className={styles.navLink}>
           Rankings
         </Link>
+        <Link href="/dashboard/maps" className={styles.navLink}>
+          Mapas
+        </Link>
       </nav>
     </aside>
   );

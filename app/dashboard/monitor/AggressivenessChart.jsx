@@ -15,25 +15,30 @@ export default function AggressivenessChart({ rows }) {
   return (
     <div className={styles.chartWrap}>
       <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 48 }}>
-          <CartesianGrid stroke={GRID_COLOR} vertical={false} />
+        <BarChart data={data} layout="vertical" margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
+          <CartesianGrid stroke={GRID_COLOR} horizontal={false} />
           <XAxis
-            dataKey="name"
-            interval={0}
-            angle={-35}
-            textAnchor="end"
-            height={60}
+            type="number"
             tick={{ fontSize: 12, fill: "#fff" }}
-            axisLine={{ stroke: "rgba(255,255,255,0.2)" }}
-            tickLine={{ stroke: "rgba(255,255,255,0.2)" }}
+            axisLine={{ stroke: "rgba(255,255,255,0.18)" }}
+            tickLine={{ stroke: "rgba(255,255,255,0.18)" }}
           />
-          <YAxis tick={{ fontSize: 12, fill: "#fff" }} />
+          <YAxis
+            type="category"
+            dataKey="name"
+            width={120}
+            tick={{ fontSize: 12, fill: "#fff" }}
+            axisLine={{ stroke: "rgba(255,255,255,0.18)" }}
+            tickLine={{ stroke: "rgba(255,255,255,0.18)" }}
+          />
           <Tooltip />
-          <Bar dataKey="ratio" fill={BAR_COLOR} radius={[8, 8, 0, 0]} />
+          <Bar dataKey="ratio" fill={BAR_COLOR} radius={[0, 10, 10, 0]} />
         </BarChart>
       </ResponsiveContainer>
 
-      <div className={styles.legend}>(Att Δ / (Def Δ + 1))</div>
+      <div className={styles.legend}>
+        <br />
+      </div>
     </div>
   );
 }

@@ -51,28 +51,10 @@ export async function middleware(req) {
     }
   }
 
-  // User UI
-  if (pathname.startsWith("/dashboard")) {
-    if (pathname.startsWith("/dashboard/login")) return NextResponse.next();
-    if (!(await isUser(req))) {
-      const url = req.nextUrl.clone();
-      url.pathname = "/dashboard/login";
-      url.searchParams.set("next", pathname);
-      return NextResponse.redirect(url);
-    }
-  }
-
-  // User APIs
-  if (pathname.startsWith("/api/user")) {
-    if (pathname.startsWith("/api/user/login")) return NextResponse.next();
-    if (!(await isUser(req))) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-  }
-
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/admin/:path*", "/dashboard/:path*", "/api/user/:path*"],
+  // Solo protegemos admin. El dashboard es público.
+  matcher: ["/admin/:path*", "/api/admin/:path*"],
 };

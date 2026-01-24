@@ -1,67 +1,67 @@
 .wrap {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px 2px 0;
+}
+
+.h1 {
+  margin: 0;
+  font-size: 28px;
+  letter-spacing: 0.2px;
+}
+
+.sub {
+  color: var(--muted);
 }
 
 .kpis {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
-.card {
-  padding: 14px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.full {
-  width: 100%;
-}
-
-.cardTitle {
-  margin: 0 0 10px 0;
-  font-size: 16px;
-}
-
-.grid {
-  display: flex;
-  flex-wrap: wrap;
+.row2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
 }
 
-.grid > .card {
-  width: calc(50% - 8px);
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
 }
 
-.cardPlaceholder {
-  width: calc(50% - 8px);
+.sectionTitle {
+  margin-top: 8px;
+  font-weight: 700;
+  opacity: 0.85;
 }
 
-@media (max-width: 900px) {
-  .grid > .card,
-  .cardPlaceholder {
-    width: 100%;
-  }
-}
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-}
-
-.table th,
-.table td {
-  padding: 6px 4px;
-}
-
-.table th {
-  text-align: left;
-  opacity: 0.7;
+.seaGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
 }
 
 .alignRight {
   text-align: right;
+}
+
+@media (max-width: 900px) {
+  .kpis {
+    grid-template-columns: 1fr;
+  }
+  .row2,
+  .grid,
+  .seaGrid {
+    grid-template-columns: 1fr;
+  }
 }
