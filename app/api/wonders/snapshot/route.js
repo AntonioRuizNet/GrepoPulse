@@ -3,7 +3,7 @@ export const runtime = "nodejs";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { processWonderSnapshot } from "@/lib/wonders/processWonderSnapshot";
+import { processWonderLevelEvents } from "@/lib/wonders/processWonderLevelEvents";
 
 const WonderSchema = z.object({
   wonderType: z.string().min(1),
@@ -71,7 +71,7 @@ export async function POST(req) {
     const json = await req.json();
     const body = BodySchema.parse(json);
 
-    const result = await processWonderSnapshot({
+    const result = await processWonderLevelEvents({
       prisma,
       body,
     });
@@ -79,7 +79,8 @@ export async function POST(req) {
     return jsonCors({
       ok: true,
       inserted: result.inserted,
-      eventsCreated: result.eventsCreated,
+      updatedPrevious: result.updatedPrevious,
+      skippedExisting: result.skippedExisting,
     });
   } catch (error) {
     return jsonCors({ error: error?.message || String(error) }, { status: 400 });

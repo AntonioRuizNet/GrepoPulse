@@ -204,19 +204,25 @@ model WonderSnapshot {
 }
 
 model WonderLevelEvent {
-  id                 Int      @id @default(autoincrement())
-  world              String
-  allianceName       String   @map("alliance_name")
-  wonderType         String   @map("wonder_type")
-  level              Int
-  detectedAt         DateTime @map("detected_at")
-  previousLevel      Int?     @map("previous_level")
-  previousDetectedAt DateTime? @map("previous_detected_at")
-  durationSeconds    Int?     @map("duration_seconds")
-  officialDurationSeconds Int?    @map("official_duration_seconds")
-acceleratedSeconds      Int?    @map("accelerated_seconds")
-accelerationsUsed       Decimal? @db.Decimal(10, 2) @map("accelerations_used")
+  id                      Int       @id @default(autoincrement())
+  world                   String
+  allianceName            String    @map("alliance_name")
+  wonderType              String    @map("wonder_type")
+  wonderName              String?   @map("wonder_name")
+  level                   Int
+  sea                     Int?
+  detectedAt              DateTime  @map("detected_at")
+  finishedAt              DateTime? @map("finished_at")
+  previousLevel           Int?      @map("previous_level")
+  previousDetectedAt      DateTime? @map("previous_detected_at")
+  durationSeconds         Int?      @map("duration_seconds")
+  officialDurationSeconds Int?      @map("official_duration_seconds")
+  acceleratedSeconds      Int?      @map("accelerated_seconds")
+  accelerationsUsed       Decimal?  @db.Decimal(10, 2) @map("accelerations_used")
+  allianceRank   Int? @map("alliance_rank")
+  alliancePoints Int? @map("alliance_points")
 
+  @@unique([world, allianceName, wonderType, level])
   @@index([world, detectedAt])
   @@index([world, allianceName, wonderType, detectedAt])
   @@map("wonder_level_events")

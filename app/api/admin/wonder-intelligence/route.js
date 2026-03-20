@@ -5,84 +5,67 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const world = searchParams.get("world");
 
-  const snapshots = await prisma.wonderSnapshot.findMany({
-    where: world ? { world } : undefined,
-    orderBy: {
-      capturedAt: "desc",
-    },
-  });
-
   const events = await prisma.wonderLevelEvent.findMany({
     where: world ? { world } : undefined,
     orderBy: [{ detectedAt: "desc" }, { level: "desc" }],
   });
 
-  const latestMap = new Map();
-
-  for (const snapshot of snapshots) {
-    const key = `${snapshot.world}-${snapshot.allianceName}-${snapshot.wonderType}`;
-
-    if (!latestMap.has(key)) {
-      latestMap.set(key, snapshot);
-    }
-  }
-
-  const eventsByWonderMap = new Map();
+  const latestByWonderMap = new Map();
+  const historyByWonderMap = new Map();
 
   for (const event of events) {
-    const key = `${event.world}-${event.allianceName}-${event.wonderType}`;
+    const wonderKey = `${event.world}-${event.allianceName}-${event.wonderType}`;
 
-    if (!eventsByWonderMap.has(key)) {
-      eventsByWonderMap.set(key, []);
+    if (!latestByWonderMap.has(wonderKey)) {
+      latestByWonderMap.set(wonderKey, event);
     }
 
-    eventsByWonderMap.get(key).push(event);
+    if (!historyByWonderMap.has(wonderKey)) {
+      historyByWonderMap.set(wonderKey, []);
+    }
+
+    historyByWonderMap.get(wonderKey).push({
+      level: event.level,
+      detectedAt: event.detectedAt,
+      finishedAt: event.finishedAt,
+      previousLevel: event.previousLevel,
+      previousDetectedAt: event.previousDetectedAt,
+      durationSeconds: event.durationSeconds,
+      officialDurationSeconds: event.officialDurationSeconds,
+      acceleratedSeconds: event.acceleratedSeconds,
+      accelerationsUsed: event.accelerationsUsed,
+    });
   }
 
   const alliancesMap = new Map();
 
-  for (const row of latestMap.values()) {
-    const allianceKey = `${row.world}-${row.allianceName}`;
+  for (const event of latestByWonderMap.values()) {
+    const allianceKey = `${event.world}-${event.allianceName}`;
 
     if (!alliancesMap.has(allianceKey)) {
       alliancesMap.set(allianceKey, {
-        world: row.world,
-        name: row.allianceName,
-        rank: row.allianceRank,
-        points: row.alliancePoints,
+        world: event.world,
+        name: event.allianceName,
+        rank: event.allianceRank,
+        points: event.alliancePoints,
         wonders: [],
       });
     }
 
-    const wonderKey = `${row.world}-${row.allianceName}-${row.wonderType}`;
-    const wonderEvents = eventsByWonderMap.get(wonderKey) || [];
-
-    const currentLevelEvent = wonderEvents.find((event) => event.level === row.level) || null;
-
-    const history = [...wonderEvents]
-      .sort((a, b) => b.level - a.level)
-      .map((event) => ({
-        level: event.level,
-        detectedAt: event.detectedAt,
-        previousLevel: event.previousLevel,
-        previousDetectedAt: event.previousDetectedAt,
-        durationSeconds: event.durationSeconds,
-        officialDurationSeconds: event.officialDurationSeconds,
-        acceleratedSeconds: event.acceleratedSeconds,
-        accelerationsUsed: event.accelerationsUsed,
-      }));
+    const wonderKey = `${event.world}-${event.allianceName}-${event.wonderType}`;
+    const history = (historyByWonderMap.get(wonderKey) || []).sort((a, b) => b.level - a.level);
 
     alliancesMap.get(allianceKey).wonders.push({
-      wonderType: row.wonderType,
-      wonderName: row.wonderName,
-      level: row.level,
-      sea: row.sea,
-      capturedAt: row.capturedAt,
-      levelDetectedAt: currentLevelEvent?.detectedAt || null,
-      durationSeconds: currentLevelEvent?.durationSeconds ?? null,
-      officialDurationSeconds: currentLevelEvent?.officialDurationSeconds ?? null,
-      acceleratedSeconds: currentLevelEvent?.acceleratedSeconds ?? null,
-      accelerationsUsed: currentLevelEvent?.accelerationsUsed ?? null,
+      wonderType: event.wonderType,
+      wonderName: event.wonderName,
+      level: event.level,
+      sea: event.sea,
+      capturedAt: event.detectedAt,
+      levelDetectedAt: event.detectedAt,
+      durationSeconds: event.durationSeconds,
+      officialDurationSeconds: event.officialDurationSeconds,
+      acceleratedSeconds: event.acceleratedSeconds,
+      accelerationsUsed: event.accelerationsUsed,
       history,
     });
   }
@@ -90,10 +73,14 @@ export async function GET(req) {
   const alliances = [...alliancesMap.values()]
     .map((alliance) => ({
       ...alliance,
-      wonders: alliance.wonders.sort((a, b) => a.wonderName.localeCompare(b.wonderName, "es")),
+      wonders: alliance.wonders.sort((a, b) => (a.wonderName || "").localeCompare(b.wonderName || "", "es")),
     }))
     .sort((a, b) => {
-      if (a.rank !== b.rank) return a.rank - b.rank;
+      const rankA = a.rank ?? Number.MAX_SAFE_INTEGER;
+      const rankB = b.rank ?? Number.MAX_SAFE_INTEGER;
+
+      if (rankA !== rankB) return rankA - rankB;
+
       return a.name.localeCompare(b.name, "es");
     });
 
