@@ -185,3 +185,36 @@ model Conquer {
   @@id([worldId, townId, time])
   @@index([worldId, time])
 }
+
+model WonderSnapshot {
+  id            Int      @id @default(autoincrement())
+  capturedAt    DateTime @map("captured_at")
+  world         String
+  allianceName  String   @map("alliance_name")
+  allianceRank  Int      @map("alliance_rank")
+  alliancePoints Int     @map("alliance_points")
+  wonderType    String   @map("wonder_type")
+  wonderName    String   @map("wonder_name")
+  level         Int
+  sea           Int
+
+  @@index([world, capturedAt])
+  @@index([world, allianceName, wonderType, capturedAt])
+  @@map("wonder_snapshots")
+}
+
+model WonderLevelEvent {
+  id                 Int      @id @default(autoincrement())
+  world              String
+  allianceName       String   @map("alliance_name")
+  wonderType         String   @map("wonder_type")
+  level              Int
+  detectedAt         DateTime @map("detected_at")
+  previousLevel      Int?     @map("previous_level")
+  previousDetectedAt DateTime? @map("previous_detected_at")
+  durationSeconds    Int?     @map("duration_seconds")
+
+  @@index([world, detectedAt])
+  @@index([world, allianceName, wonderType, detectedAt])
+  @@map("wonder_level_events")
+}

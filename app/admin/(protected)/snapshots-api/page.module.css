@@ -1,0 +1,97 @@
+.card {
+  padding: 20px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.025));
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+}
+
+.header {
+  margin-bottom: 16px;
+}
+
+.title {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.1;
+}
+
+.subtitle {
+  margin: 8px 0 0;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.input {
+  min-width: 220px;
+  flex: 1;
+}
+
+.button,
+.secondaryButton {
+  white-space: nowrap;
+}
+
+.success {
+  color: #9ef0b8;
+  margin: 10px 0 0;
+}
+
+.error {
+  color: #ffb4b4;
+  margin: 10px 0 0;
+}
+
+.separator {
+  height: 1px;
+  margin: 18px 0;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.sectionTitle {
+  margin: 0 0 12px;
+  font-size: 18px;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 10px 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  vertical-align: top;
+}
+
+.table th {
+  border-top: none;
+  color: rgba(255, 255, 255, 0.72);
+  font-weight: 500;
+}
+
+.link {
+  text-decoration: none;
+}
+
+@media (max-width: 720px) {
+  .controls {
+    flex-direction: column;
+  }
+
+  .input {
+    min-width: 100%;
+  }
+}
