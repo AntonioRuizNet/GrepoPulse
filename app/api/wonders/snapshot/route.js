@@ -3,6 +3,7 @@ export const runtime = "nodejs";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { processWonderSnapshot } from "@/lib/wonders/processWonderSnapshot";
 
 const WonderSchema = z.object({
   wonderType: z.string().min(1),
@@ -70,79 +71,15 @@ export async function POST(req) {
     const json = await req.json();
     const body = BodySchema.parse(json);
 
-    const capturedAt = new Date(body.capturedAt);
-
-    const snapshotRows = body.alliances.flatMap((alliance) =>
-      alliance.wonders.map((wonder) => ({
-        capturedAt,
-        world: body.world,
-        allianceName: alliance.name,
-        allianceRank: alliance.rank,
-        alliancePoints: alliance.points,
-        wonderType: wonder.wonderType,
-        wonderName: wonder.wonderName,
-        level: wonder.level,
-        sea: wonder.sea,
-      })),
-    );
-
-    if (snapshotRows.length === 0) {
-      return jsonCors({ ok: true, inserted: 0, eventsCreated: 0 });
-    }
-
-    let eventsCreated = 0;
-
-    await prisma.$transaction(async (tx) => {
-      await tx.wonderSnapshot.createMany({
-        data: snapshotRows,
-      });
-
-      for (const row of snapshotRows) {
-        const previous = await tx.wonderSnapshot.findFirst({
-          where: {
-            world: row.world,
-            allianceName: row.allianceName,
-            wonderType: row.wonderType,
-            capturedAt: {
-              lt: capturedAt,
-            },
-          },
-          orderBy: {
-            capturedAt: "desc",
-          },
-          select: {
-            level: true,
-            capturedAt: true,
-          },
-        });
-
-        if (!previous) continue;
-
-        if (row.level > previous.level) {
-          const durationSeconds = Math.max(0, Math.floor((capturedAt.getTime() - previous.capturedAt.getTime()) / 1000));
-
-          await tx.wonderLevelEvent.create({
-            data: {
-              world: row.world,
-              allianceName: row.allianceName,
-              wonderType: row.wonderType,
-              level: row.level,
-              detectedAt: capturedAt,
-              previousLevel: previous.level,
-              previousDetectedAt: previous.capturedAt,
-              durationSeconds,
-            },
-          });
-
-          eventsCreated += 1;
-        }
-      }
+    const result = await processWonderSnapshot({
+      prisma,
+      body,
     });
 
     return jsonCors({
       ok: true,
-      inserted: snapshotRows.length,
-      eventsCreated,
+      inserted: result.inserted,
+      eventsCreated: result.eventsCreated,
     });
   } catch (error) {
     return jsonCors({ error: error?.message || String(error) }, { status: 400 });

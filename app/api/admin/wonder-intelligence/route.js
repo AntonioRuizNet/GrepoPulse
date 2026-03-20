@@ -19,34 +19,33 @@ export async function GET(req) {
     },
   });
 
-  // Último snapshot por alianza + maravilla
   const latestMap = new Map();
 
-  for (const s of snapshots) {
-    const key = `${s.world}-${s.allianceName}-${s.wonderType}`;
+  for (const snapshot of snapshots) {
+    const key = `${snapshot.world}-${snapshot.allianceName}-${snapshot.wonderType}`;
+
     if (!latestMap.has(key)) {
-      latestMap.set(key, s);
+      latestMap.set(key, snapshot);
     }
   }
 
-  // Último evento por nivel
   const eventMap = new Map();
 
-  for (const e of events) {
-    const key = `${e.world}-${e.allianceName}-${e.wonderType}-${e.level}`;
+  for (const event of events) {
+    const key = `${event.world}-${event.allianceName}-${event.wonderType}-${event.level}`;
+
     if (!eventMap.has(key)) {
-      eventMap.set(key, e);
+      eventMap.set(key, event);
     }
   }
 
-  // Agrupar por alianza
   const alliancesMap = new Map();
 
   for (const row of latestMap.values()) {
-    const key = `${row.world}-${row.allianceName}`;
+    const allianceKey = `${row.world}-${row.allianceName}`;
 
-    if (!alliancesMap.has(key)) {
-      alliancesMap.set(key, {
+    if (!alliancesMap.has(allianceKey)) {
+      alliancesMap.set(allianceKey, {
         world: row.world,
         name: row.allianceName,
         rank: row.allianceRank,
@@ -58,7 +57,7 @@ export async function GET(req) {
     const eventKey = `${row.world}-${row.allianceName}-${row.wonderType}-${row.level}`;
     const event = eventMap.get(eventKey);
 
-    alliancesMap.get(key).wonders.push({
+    alliancesMap.get(allianceKey).wonders.push({
       wonderType: row.wonderType,
       wonderName: row.wonderName,
       level: row.level,
@@ -66,10 +65,23 @@ export async function GET(req) {
       capturedAt: row.capturedAt,
       levelDetectedAt: event?.detectedAt || null,
       durationSeconds: event?.durationSeconds ?? null,
+      officialDurationSeconds: event?.officialDurationSeconds ?? null,
+      acceleratedSeconds: event?.acceleratedSeconds ?? null,
+      accelerationsUsed: event?.accelerationsUsed ?? null,
     });
   }
 
+  const alliances = [...alliancesMap.values()]
+    .map((alliance) => ({
+      ...alliance,
+      wonders: alliance.wonders.sort((a, b) => a.wonderName.localeCompare(b.wonderName, "es")),
+    }))
+    .sort((a, b) => {
+      if (a.rank !== b.rank) return a.rank - b.rank;
+      return a.name.localeCompare(b.name, "es");
+    });
+
   return NextResponse.json({
-    alliances: [...alliancesMap.values()],
+    alliances,
   });
 }

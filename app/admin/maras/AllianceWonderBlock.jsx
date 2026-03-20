@@ -1,3 +1,5 @@
+import styles from "./AllianceWonderBlock.module.css";
+
 function formatDate(value) {
   if (!value) return "-";
 
@@ -26,45 +28,53 @@ function formatDuration(seconds) {
   return parts.join(" ");
 }
 
+function formatNumber(value) {
+  if (value === null || value === undefined) return "-";
+  return Number(value).toLocaleString("es-ES", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  });
+}
+
 export default function AllianceWonderBlock({ alliance }) {
   return (
-    <section
-      style={{
-        border: "1px solid #e5e7eb",
-        borderRadius: 12,
-        padding: 16,
-        background: "#fff",
-        color: "black",
-      }}
-    >
-      <div style={{ marginBottom: 12 }}>
-        <h2 style={{ margin: 0, fontSize: 20 }}>{alliance.name}</h2>
-        <div style={{ marginTop: 6, color: "#6b7280", fontSize: 14 }}>
-          Rank: {alliance.rank ?? "-"} · Puntos: {alliance.points ?? "-"} · Mundo: {alliance.world}
+    <section className={styles.card}>
+      <div className={styles.header}>
+        <div>
+          <h2 className={styles.title}>{alliance.name}</h2>
+          <div className={styles.meta}>
+            <span>Rank: {alliance.rank ?? "-"}</span>
+            <span>Puntos: {alliance.points ?? "-"}</span>
+            <span>Mundo: {alliance.world}</span>
+          </div>
         </div>
       </div>
 
-      <div style={{ overflowX: "auto" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+      <div className={styles.tableWrap}>
+        <table className={styles.table}>
           <thead>
-            <tr style={{ background: "#f9fafb", textAlign: "left" }}>
-              <th style={{ padding: 10, borderBottom: "1px solid #e5e7eb" }}>Maravilla</th>
-              <th style={{ padding: 10, borderBottom: "1px solid #e5e7eb" }}>Nivel actual</th>
-              <th style={{ padding: 10, borderBottom: "1px solid #e5e7eb" }}>Último snapshot</th>
-              <th style={{ padding: 10, borderBottom: "1px solid #e5e7eb" }}>Nivel detectado en</th>
-              <th style={{ padding: 10, borderBottom: "1px solid #e5e7eb" }}>Tiempo hasta este nivel</th>
-              <th style={{ padding: 10, borderBottom: "1px solid #e5e7eb" }}>Mar</th>
+            <tr>
+              <th>Maravilla</th>
+              <th>Nivel</th>
+              <th>Detectado</th>
+              <th>Tiempo real</th>
+              <th>Tiempo oficial</th>
+              <th>Acelerado</th>
+              <th>Aceleraciones</th>
+              <th>Mar</th>
             </tr>
           </thead>
           <tbody>
             {alliance.wonders.map((wonder) => (
               <tr key={`${alliance.name}-${wonder.wonderType}`}>
-                <td style={{ padding: 10, borderBottom: "1px solid #f3f4f6" }}>{wonder.wonderName}</td>
-                <td style={{ padding: 10, borderBottom: "1px solid #f3f4f6" }}>{wonder.level}</td>
-                <td style={{ padding: 10, borderBottom: "1px solid #f3f4f6" }}>{formatDate(wonder.capturedAt)}</td>
-                <td style={{ padding: 10, borderBottom: "1px solid #f3f4f6" }}>{formatDate(wonder.levelDetectedAt)}</td>
-                <td style={{ padding: 10, borderBottom: "1px solid #f3f4f6" }}>{formatDuration(wonder.durationSeconds)}</td>
-                <td style={{ padding: 10, borderBottom: "1px solid #f3f4f6" }}>{wonder.sea}</td>
+                <td className={styles.wonderName}>{wonder.wonderName}</td>
+                <td>{wonder.level}</td>
+                <td>{formatDate(wonder.levelDetectedAt || wonder.capturedAt)}</td>
+                <td>{formatDuration(wonder.durationSeconds)}</td>
+                <td>{formatDuration(wonder.officialDurationSeconds)}</td>
+                <td>{formatDuration(wonder.acceleratedSeconds)}</td>
+                <td>{formatNumber(wonder.accelerationsUsed)}</td>
+                <td>{wonder.sea}</td>
               </tr>
             ))}
           </tbody>

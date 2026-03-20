@@ -5,9 +5,9 @@ import { usePathname } from "next/navigation";
 import styles from "./AdminSidebar.module.css";
 
 const ITEMS = [
-  { href: "/admin/snapshots-api", label: "Snapshots API" },
-  { href: "/admin/snapshots-maras", label: "Snapshots Maras" },
   { href: "/admin/inteligencia-maras", label: "Inteligencia Maras" },
+  { href: "/admin/snapshots-maras", label: "Snapshots Maras" },
+  { href: "/admin/snapshots-api", label: "Otras configuraciones" },
 ];
 
 export default function AdminSidebar() {
