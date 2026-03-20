@@ -118,7 +118,7 @@ export async function POST(req) {
 
         if (!previous) continue;
 
-        if (row.level !== previous.level) {
+        if (row.level > previous.level) {
           const durationSeconds = Math.max(0, Math.floor((capturedAt.getTime() - previous.capturedAt.getTime()) / 1000));
 
           await tx.wonderLevelEvent.create({
