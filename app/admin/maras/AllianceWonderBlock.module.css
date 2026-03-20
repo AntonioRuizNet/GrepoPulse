@@ -13,67 +13,46 @@
 }
 
 .header {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 12px;
-  align-items: start;
-  padding: 14px 14px 10px;
+  padding: 14px;
   border-bottom: 1px solid rgba(148, 163, 184, 0.1);
 }
 
-.eyebrow {
+.headerStats {
+  display: grid;
+  grid-template-columns: 110px minmax(180px, 1.4fr) repeat(3, minmax(110px, 1fr));
+  gap: 10px;
+  align-items: stretch;
+}
+
+.headerItem {
+  padding: 5px 6px;
+  /* border: 1px solid rgba(148, 163, 184, 0.12);*/
+  border-radius: 14px;
+  /* background: rgba(15, 23, 42, 0.62);*/
+  min-width: 0;
+}
+
+.headerItemAlliance {
+  /*background: linear-gradient(180deg, rgba(30, 41, 59, 0.72), rgba(15, 23, 42, 0.72));*/
+}
+
+.headerLabel {
+  display: block;
   margin-bottom: 4px;
-  color: #67e8f9;
+  color: #94a3b8;
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
-.title {
-  margin: 0;
-  font-size: 18px;
-  line-height: 1.08;
-  font-weight: 800;
+.headerValue {
+  display: block;
   color: #f8fbff;
-}
-
-.meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 10px;
-  margin-top: 6px;
-  color: #94a3b8;
-  font-size: 11px;
-}
-
-.summaryGrid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(70px, 1fr));
-  gap: 8px;
-}
-
-.summaryBox {
-  padding: 8px 10px;
-  border: 1px solid rgba(148, 163, 184, 0.12);
-  border-radius: 12px;
-  background: rgba(15, 23, 42, 0.6);
-}
-
-.summaryLabel {
-  display: block;
-  margin-bottom: 3px;
-  color: #94a3b8;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-
-.summaryValue {
-  display: block;
   font-size: 15px;
   font-weight: 800;
-  color: #f8fbff;
+  line-height: 1.2;
+  word-break: break-word;
 }
 
 .chartPanel {
@@ -81,49 +60,78 @@
   border-bottom: 1px solid rgba(148, 163, 184, 0.1);
 }
 
-.wondersGrid {
-  display: grid;
-  gap: 8px;
-  padding: 10px 12px 12px;
+.tablesSection {
+  padding: 12px;
 }
 
-.wonderCard {
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.sectionTitle {
+  margin: 0;
+  color: #f8fbff;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.sectionText {
+  margin: 4px 0 0;
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.tablesGrid {
+  display: grid;
+  gap: 10px;
+}
+
+.tableCard {
+  overflow: hidden;
   border: 1px solid rgba(148, 163, 184, 0.12);
   border-radius: 14px;
   background: linear-gradient(180deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.72));
-  padding: 10px;
 }
 
-.wonderTop {
+.tableHeader {
   display: flex;
-  gap: 8px;
-  align-items: start;
   justify-content: space-between;
-  margin-bottom: 6px;
+  align-items: start;
+  gap: 10px;
+  padding: 12px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
 }
 
-.wonderName {
+.tableTitleGroup {
+  min-width: 0;
+}
+
+.tableTitle {
   margin: 0;
-  font-size: 13px;
-  line-height: 1.28;
-  font-weight: 700;
   color: #f8fbff;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.25;
 }
 
-.wonderMeta {
+.tableMeta {
   display: flex;
   flex-wrap: wrap;
   gap: 6px 10px;
-  margin-bottom: 8px;
+  margin-top: 5px;
   color: #94a3b8;
   font-size: 10px;
 }
 
-.levelPill {
+.currentLevelPill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 3px 8px;
+  padding: 4px 9px;
   border-radius: 999px;
   background: rgba(34, 211, 238, 0.12);
   border: 1px solid rgba(34, 211, 238, 0.22);
@@ -133,68 +141,50 @@
   white-space: nowrap;
 }
 
-.metricGrid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 6px;
-  margin-bottom: 8px;
+.tableWrapper {
+  overflow-x: auto;
 }
 
-.metricBox {
-  padding: 7px 8px;
-  border: 1px solid rgba(148, 163, 184, 0.1);
-  border-radius: 10px;
-  background: rgba(2, 6, 23, 0.22);
+.wonderTable {
+  width: 100%;
+  border-collapse: collapse;
+  /*min-width: 680px;*/
 }
 
-.metricLabel {
-  display: block;
-  margin-bottom: 2px;
+.wonderTable thead th {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
   color: #94a3b8;
-  font-size: 9px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-
-.metricValue {
-  display: block;
-  color: #f8fbff;
-  font-size: 12px;
-  font-weight: 800;
-  line-height: 1.15;
-}
-
-.historySection {
-  display: grid;
-  gap: 6px;
-}
-
-.historyList {
-  display: grid;
-  gap: 5px;
-}
-
-.historyItem {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 8px;
-  align-items: center;
-  padding: 7px 8px;
-  border: 1px solid rgba(148, 163, 184, 0.1);
-  border-radius: 10px;
-  background: linear-gradient(180deg, rgba(30, 41, 59, 0.58), rgba(15, 23, 42, 0.58));
-  color: #cbd5e1;
   font-size: 10px;
-  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  text-align: left;
+  background: rgba(2, 6, 23, 0.18);
 }
 
-.historyBadge {
+.wonderTable tbody td {
+  padding: 5px 6px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+  color: #e5eefb;
+  font-size: 12px;
+  vertical-align: middle;
+}
+
+.wonderTable tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.wonderTable tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.levelBadge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 34px;
-  padding: 2px 6px;
+  min-width: 38px;
+  padding: 3px 8px;
   border-radius: 999px;
   background: rgba(99, 102, 241, 0.15);
   border: 1px solid rgba(99, 102, 241, 0.2);
@@ -203,21 +193,8 @@
   font-weight: 800;
 }
 
-.historyEmpty {
-  color: #94a3b8;
-  font-size: 10px;
-}
-
-@media (max-width: 900px) {
-  .header {
-    grid-template-columns: 1fr;
-  }
-
-  .summaryGrid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .metricGrid {
+@media (max-width: 1100px) {
+  .headerStats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -227,15 +204,24 @@
     border-radius: 16px;
   }
 
-  .title {
-    font-size: 17px;
+  .header {
+    padding: 12px;
   }
 
-  .summaryGrid {
+  .headerStats {
     grid-template-columns: 1fr;
   }
 
-  .metricGrid {
-    grid-template-columns: 1fr 1fr;
+  .headerValue {
+    font-size: 14px;
+  }
+
+  .tableHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .wonderTable {
+    min-width: 620px;
   }
 }

@@ -49,66 +49,79 @@ function shortenWonderName(name) {
   return clean.length > 14 ? `${clean.slice(0, 14)}…` : clean;
 }
 
-function HistoryItem({ item }) {
-  return (
-    <div className={styles.historyItem}>
-      <span className={styles.historyBadge}>N{item.level}</span>
-      <span>{formatDate(item.detectedAt)}</span>
-      <span>R {formatDuration(item.durationSeconds)}</span>
-      <span>O {formatDuration(item.officialDurationSeconds)}</span>
-      <span>A {formatDuration(item.acceleratedSeconds)}</span>
-      <span>X {formatNumber(item.accelerationsUsed)}</span>
-    </div>
-  );
+function buildWonderRows(wonder) {
+  const history = Array.isArray(wonder.history) ? wonder.history : [];
+
+  if (history.length) {
+    return [...history]
+      .sort((a, b) => Number(b.level || 0) - Number(a.level || 0))
+      .map((item) => ({
+        level: item.level ?? "-",
+        detectedAt: item.detectedAt,
+        durationSeconds: item.durationSeconds,
+        officialDurationSeconds: item.officialDurationSeconds,
+        acceleratedSeconds: item.acceleratedSeconds,
+        accelerationsUsed: item.accelerationsUsed,
+      }));
+  }
+
+  return [
+    {
+      level: wonder.level ?? "-",
+      detectedAt: wonder.levelDetectedAt || wonder.capturedAt,
+      durationSeconds: wonder.durationSeconds,
+      officialDurationSeconds: wonder.officialDurationSeconds,
+      acceleratedSeconds: wonder.acceleratedSeconds,
+      accelerationsUsed: wonder.accelerationsUsed,
+    },
+  ];
 }
 
-function WonderCard({ wonder }) {
-  const history = wonder.history || [];
+function WonderTable({ wonder }) {
+  const rows = buildWonderRows(wonder);
 
   return (
-    <article className={styles.wonderCard}>
-      <div className={styles.wonderTop}>
-        <h3 className={styles.wonderName}>{wonder.wonderName}</h3>
-        <span className={styles.levelPill}>Nv {wonder.level}</span>
-      </div>
-
-      <div className={styles.wonderMeta}>
-        <span>Mar {wonder.sea}</span>
-        <span>{formatDate(wonder.levelDetectedAt || wonder.capturedAt)}</span>
-      </div>
-
-      <div className={styles.metricGrid}>
-        <div className={styles.metricBox}>
-          <span className={styles.metricLabel}>Real</span>
-          <strong className={styles.metricValue}>{formatDuration(wonder.durationSeconds)}</strong>
-        </div>
-
-        <div className={styles.metricBox}>
-          <span className={styles.metricLabel}>Oficial</span>
-          <strong className={styles.metricValue}>{formatDuration(wonder.officialDurationSeconds)}</strong>
-        </div>
-
-        <div className={styles.metricBox}>
-          <span className={styles.metricLabel}>Acelerado</span>
-          <strong className={styles.metricValue}>{formatDuration(wonder.acceleratedSeconds)}</strong>
-        </div>
-
-        <div className={styles.metricBox}>
-          <span className={styles.metricLabel}>Acelerac.</span>
-          <strong className={styles.metricValue}>{formatNumber(wonder.accelerationsUsed)}</strong>
-        </div>
-      </div>
-
-      <div className={styles.historySection}>
-        {history.length ? (
-          <div className={styles.historyList}>
-            {history.map((item) => (
-              <HistoryItem key={`${wonder.wonderType}-${item.level}-${item.detectedAt}`} item={item} />
-            ))}
+    <article className={styles.tableCard}>
+      <div className={styles.tableHeader}>
+        <div className={styles.tableTitleGroup}>
+          <h3 className={styles.tableTitle}>{wonder.wonderName}</h3>
+          <div className={styles.tableMeta}>
+            <span>Tipo: {wonder.wonderType || "-"}</span>
+            <span>Mar: {wonder.sea ?? "-"}</span>
+            <span>Nivel actual: {wonder.level ?? "-"}</span>
           </div>
-        ) : (
-          <div className={styles.historyEmpty}>Sin historial detectado.</div>
-        )}
+        </div>
+
+        <span className={styles.currentLevelPill}>Nv {wonder.level ?? "-"}</span>
+      </div>
+
+      <div className={styles.tableWrapper}>
+        <table className={styles.wonderTable}>
+          <thead>
+            <tr>
+              <th>Nivel</th>
+              <th>Detectado</th>
+              <th>Real</th>
+              <th>Oficial</th>
+              <th>Acelerado</th>
+              <th>Aceleraciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={`${wonder.wonderType}-${row.level}-${row.detectedAt || "empty"}`}>
+                <td>
+                  <span className={styles.levelBadge}>N{row.level}</span>
+                </td>
+                <td>{formatDate(row.detectedAt)}</td>
+                <td>{formatDuration(row.durationSeconds)}</td>
+                <td>{formatDuration(row.officialDurationSeconds)}</td>
+                <td>{formatDuration(row.acceleratedSeconds)}</td>
+                <td>{formatNumber(row.accelerationsUsed)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </article>
   );
@@ -132,28 +145,30 @@ export default function AllianceWonderBlock({ alliance }) {
   return (
     <section className={styles.card}>
       <div className={styles.header}>
-        <div>
-          <div className={styles.eyebrow}>Alliance Panel</div>
-          <h2 className={styles.title}>{alliance.name}</h2>
-          <div className={styles.meta}>
-            <span>#{alliance.rank ?? "-"}</span>
-            <span>{alliance.points ?? "-"} pts</span>
-            <span>{alliance.world}</span>
+        <div className={styles.headerStats}>
+          <div className={styles.headerItem}>
+            <span className={styles.headerLabel}>Posición</span>
+            <strong className={styles.headerValue}>#{alliance.rank ?? "-"}</strong>
           </div>
-        </div>
 
-        <div className={styles.summaryGrid}>
-          <div className={styles.summaryBox}>
-            <span className={styles.summaryLabel}>Marav.</span>
-            <strong className={styles.summaryValue}>{wonders.length}</strong>
+          <div className={`${styles.headerItem} ${styles.headerItemAlliance}`}>
+            <span className={styles.headerLabel}>Nombre alianza</span>
+            <strong className={styles.headerValue}>{alliance.name || "-"}</strong>
           </div>
-          <div className={styles.summaryBox}>
-            <span className={styles.summaryLabel}>Nivel medio</span>
-            <strong className={styles.summaryValue}>{averageLevel}</strong>
+
+          <div className={styles.headerItem}>
+            <span className={styles.headerLabel}>Puntos</span>
+            <strong className={styles.headerValue}>{formatNumber(alliance.points)}</strong>
           </div>
-          <div className={styles.summaryBox}>
-            <span className={styles.summaryLabel}>Acelerac.</span>
-            <strong className={styles.summaryValue}>{formatNumber(totalAccelerations)}</strong>
+
+          <div className={styles.headerItem}>
+            <span className={styles.headerLabel}>Maravillas</span>
+            <strong className={styles.headerValue}>{wonders.length}</strong>
+          </div>
+
+          <div className={styles.headerItem}>
+            <span className={styles.headerLabel}>Media de maravillas</span>
+            <strong className={styles.headerValue}>{averageLevel}</strong>
           </div>
         </div>
       </div>
@@ -212,10 +227,19 @@ export default function AllianceWonderBlock({ alliance }) {
         </ResponsiveContainer>
       </div>
 
-      <div className={styles.wondersGrid}>
-        {wonders.map((wonder) => (
-          <WonderCard key={`${alliance.name}-${wonder.wonderType}`} wonder={wonder} />
-        ))}
+      <div className={styles.tablesSection}>
+        <div className={styles.sectionHeader}>
+          <div>
+            <h3 className={styles.sectionTitle}>Detalle por tipo de maravilla</h3>
+            <p className={styles.sectionText}>Aceleraciones totales: {formatNumber(totalAccelerations)}</p>
+          </div>
+        </div>
+
+        <div className={styles.tablesGrid}>
+          {wonders.map((wonder) => (
+            <WonderTable key={`${alliance.name}-${wonder.wonderType}`} wonder={wonder} />
+          ))}
+        </div>
       </div>
     </section>
   );
