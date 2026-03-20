@@ -30,10 +30,24 @@ function formatDuration(seconds) {
 
 function formatNumber(value) {
   if (value === null || value === undefined) return "-";
+
   return Number(value).toLocaleString("es-ES", {
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   });
+}
+
+function HistoryItem({ item }) {
+  return (
+    <div className={styles.historyItem}>
+      <span className={styles.historyBadge}>Nv. {item.level}</span>
+      <span>{formatDate(item.detectedAt)}</span>
+      <span>Real: {formatDuration(item.durationSeconds)}</span>
+      <span>Oficial: {formatDuration(item.officialDurationSeconds)}</span>
+      <span>Acel.: {formatDuration(item.acceleratedSeconds)}</span>
+      <span>Aceleraciones: {formatNumber(item.accelerationsUsed)}</span>
+    </div>
+  );
 }
 
 export default function AllianceWonderBlock({ alliance }) {
@@ -55,19 +69,33 @@ export default function AllianceWonderBlock({ alliance }) {
           <thead>
             <tr>
               <th>Maravilla</th>
-              <th>Nivel</th>
+              <th>Nivel actual</th>
               <th>Detectado</th>
-              <th>Tiempo real</th>
-              <th>Tiempo oficial</th>
+              <th>Real</th>
+              <th>Oficial</th>
               <th>Acelerado</th>
               <th>Aceleraciones</th>
               <th>Mar</th>
             </tr>
           </thead>
+
           <tbody>
             {alliance.wonders.map((wonder) => (
               <tr key={`${alliance.name}-${wonder.wonderType}`}>
-                <td className={styles.wonderName}>{wonder.wonderName}</td>
+                <td className={styles.wonderCell}>
+                  <div className={styles.wonderName}>{wonder.wonderName}</div>
+
+                  {wonder.history?.length ? (
+                    <div className={styles.historyList}>
+                      {wonder.history.map((item) => (
+                        <HistoryItem key={`${wonder.wonderType}-${item.level}-${item.detectedAt}`} item={item} />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className={styles.historyEmpty}>Sin historial de niveles detectados.</div>
+                  )}
+                </td>
+
                 <td>{wonder.level}</td>
                 <td>{formatDate(wonder.levelDetectedAt || wonder.capturedAt)}</td>
                 <td>{formatDuration(wonder.durationSeconds)}</td>

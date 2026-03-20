@@ -43,7 +43,7 @@ export default function InteligenciaMarasPage() {
       {err ? <p style={{ color: "#b91c1c" }}>{err}</p> : null}
 
       {!loading && !err ? (
-        <div style={{ display: "grid", gap: 12 }}>
+        <div style={{ display: "grid", gap: 10 }}>
           {alliances.map((alliance) => (
             <AllianceWonderBlock key={`${alliance.world}-${alliance.name}`} alliance={alliance} />
           ))}

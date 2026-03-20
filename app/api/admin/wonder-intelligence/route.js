@@ -14,9 +14,7 @@ export async function GET(req) {
 
   const events = await prisma.wonderLevelEvent.findMany({
     where: world ? { world } : undefined,
-    orderBy: {
-      detectedAt: "desc",
-    },
+    orderBy: [{ detectedAt: "desc" }, { level: "desc" }],
   });
 
   const latestMap = new Map();
@@ -29,14 +27,16 @@ export async function GET(req) {
     }
   }
 
-  const eventMap = new Map();
+  const eventsByWonderMap = new Map();
 
   for (const event of events) {
-    const key = `${event.world}-${event.allianceName}-${event.wonderType}-${event.level}`;
+    const key = `${event.world}-${event.allianceName}-${event.wonderType}`;
 
-    if (!eventMap.has(key)) {
-      eventMap.set(key, event);
+    if (!eventsByWonderMap.has(key)) {
+      eventsByWonderMap.set(key, []);
     }
+
+    eventsByWonderMap.get(key).push(event);
   }
 
   const alliancesMap = new Map();
@@ -54,8 +54,23 @@ export async function GET(req) {
       });
     }
 
-    const eventKey = `${row.world}-${row.allianceName}-${row.wonderType}-${row.level}`;
-    const event = eventMap.get(eventKey);
+    const wonderKey = `${row.world}-${row.allianceName}-${row.wonderType}`;
+    const wonderEvents = eventsByWonderMap.get(wonderKey) || [];
+
+    const currentLevelEvent = wonderEvents.find((event) => event.level === row.level) || null;
+
+    const history = [...wonderEvents]
+      .sort((a, b) => b.level - a.level)
+      .map((event) => ({
+        level: event.level,
+        detectedAt: event.detectedAt,
+        previousLevel: event.previousLevel,
+        previousDetectedAt: event.previousDetectedAt,
+        durationSeconds: event.durationSeconds,
+        officialDurationSeconds: event.officialDurationSeconds,
+        acceleratedSeconds: event.acceleratedSeconds,
+        accelerationsUsed: event.accelerationsUsed,
+      }));
 
     alliancesMap.get(allianceKey).wonders.push({
       wonderType: row.wonderType,
@@ -63,11 +78,12 @@ export async function GET(req) {
       level: row.level,
       sea: row.sea,
       capturedAt: row.capturedAt,
-      levelDetectedAt: event?.detectedAt || null,
-      durationSeconds: event?.durationSeconds ?? null,
-      officialDurationSeconds: event?.officialDurationSeconds ?? null,
-      acceleratedSeconds: event?.acceleratedSeconds ?? null,
-      accelerationsUsed: event?.accelerationsUsed ?? null,
+      levelDetectedAt: currentLevelEvent?.detectedAt || null,
+      durationSeconds: currentLevelEvent?.durationSeconds ?? null,
+      officialDurationSeconds: currentLevelEvent?.officialDurationSeconds ?? null,
+      acceleratedSeconds: currentLevelEvent?.acceleratedSeconds ?? null,
+      accelerationsUsed: currentLevelEvent?.accelerationsUsed ?? null,
+      history,
     });
   }
 

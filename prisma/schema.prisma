@@ -213,6 +213,9 @@ model WonderLevelEvent {
   previousLevel      Int?     @map("previous_level")
   previousDetectedAt DateTime? @map("previous_detected_at")
   durationSeconds    Int?     @map("duration_seconds")
+  officialDurationSeconds Int?    @map("official_duration_seconds")
+acceleratedSeconds      Int?    @map("accelerated_seconds")
+accelerationsUsed       Decimal? @db.Decimal(10, 2) @map("accelerations_used")
 
   @@index([world, detectedAt])
   @@index([world, allianceName, wonderType, detectedAt])
