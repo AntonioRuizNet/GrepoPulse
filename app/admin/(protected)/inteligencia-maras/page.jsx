@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import AllianceWonderBlock from "../../maras/AllianceWonderBlock";
+import styles from "./page.module.css";
 
 export default function InteligenciaMarasPage() {
   const [alliances, setAlliances] = useState([]);
@@ -36,14 +37,17 @@ export default function InteligenciaMarasPage() {
   }
 
   return (
-    <div style={{ padding: 24 }}>
-      <h1 style={{ marginTop: 0, marginBottom: 16 }}>Inteligencia Maras</h1>
+    <div className={styles.page}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>Inteligencia Maras</h1>
+        <p className={styles.subtitle}>Vista analítica de progreso, aceleraciones e histórico por alianza.</p>
+      </div>
 
-      {loading ? <p>Cargando...</p> : null}
-      {err ? <p style={{ color: "#b91c1c" }}>{err}</p> : null}
+      {loading ? <p className={styles.state}>Cargando...</p> : null}
+      {err ? <p className={styles.error}>{err}</p> : null}
 
       {!loading && !err ? (
-        <div style={{ display: "grid", gap: 10 }}>
+        <div className={styles.grid}>
           {alliances.map((alliance) => (
             <AllianceWonderBlock key={`${alliance.world}-${alliance.name}`} alliance={alliance} />
           ))}
