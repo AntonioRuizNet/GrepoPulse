@@ -24,6 +24,27 @@ const BodySchema = z.object({
   alliances: z.array(AllianceSchema),
 });
 
+const ALLOWED_ORIGIN = "https://it126.grepolis.com";
+
+function corsHeaders() {
+  return {
+    "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Max-Age": "86400",
+  };
+}
+
+function jsonCors(data, init = {}) {
+  const response = NextResponse.json(data, init);
+
+  Object.entries(corsHeaders()).forEach(([key, value]) => {
+    response.headers.set(key, value);
+  });
+
+  return response;
+}
+
 function getBearerToken(req) {
   const auth = req.headers.get("authorization") || "";
   const [type, token] = auth.split(" ");
@@ -31,11 +52,19 @@ function getBearerToken(req) {
   return token;
 }
 
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: corsHeaders(),
+  });
+}
+
 export async function POST(req) {
   try {
     const token = getBearerToken(req);
+
     if (!token || token !== process.env.WONDER_INGEST_SECRET) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return jsonCors({ error: "Unauthorized" }, { status: 401 });
     }
 
     const json = await req.json();
@@ -58,18 +87,16 @@ export async function POST(req) {
     );
 
     if (snapshotRows.length === 0) {
-      return NextResponse.json({ ok: true, inserted: 0, eventsCreated: 0 });
+      return jsonCors({ ok: true, inserted: 0, eventsCreated: 0 });
     }
 
     let eventsCreated = 0;
 
     await prisma.$transaction(async (tx) => {
-      // 1) guardar snapshots
       await tx.wonderSnapshot.createMany({
         data: snapshotRows,
       });
 
-      // 2) detectar cambios de nivel
       for (const row of snapshotRows) {
         const previous = await tx.wonderSnapshot.findFirst({
           where: {
@@ -89,14 +116,8 @@ export async function POST(req) {
           },
         });
 
-        // Si no había histórico previo, puedes decidir:
-        // a) no crear evento
-        // b) crear evento inicial
-        // Aquí NO creamos evento inicial.
         if (!previous) continue;
 
-        // Solo crear evento si cambia el nivel
-        // Si quieres SOLO subidas, cambia a: row.level > previous.level
         if (row.level !== previous.level) {
           const durationSeconds = Math.max(0, Math.floor((capturedAt.getTime() - previous.capturedAt.getTime()) / 1000));
 
@@ -118,12 +139,12 @@ export async function POST(req) {
       }
     });
 
-    return NextResponse.json({
+    return jsonCors({
       ok: true,
       inserted: snapshotRows.length,
       eventsCreated,
     });
   } catch (error) {
-    return NextResponse.json({ error: error?.message || String(error) }, { status: 400 });
+    return jsonCors({ error: error?.message || String(error) }, { status: 400 });
   }
 }
