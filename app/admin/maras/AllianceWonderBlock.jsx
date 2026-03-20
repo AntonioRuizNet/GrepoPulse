@@ -34,6 +34,7 @@ export default function AllianceWonderBlock({ alliance }) {
         borderRadius: 12,
         padding: 16,
         background: "#fff",
+        color: "black",
       }}
     >
       <div style={{ marginBottom: 12 }}>
